@@ -12,7 +12,7 @@ import (
 
 const (
 	interval = 60 * 24 * time.Minute // ← 送りたい間隔を変更可
-	payload  = "うお"                  // POST する本文
+	payload  = "いくぅ(笑)"              // POST する本文
 )
 
 func postWebhook(ctx context.Context) error {
