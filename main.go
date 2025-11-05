@@ -12,11 +12,32 @@ import (
 
 const (
 	interval = 60 * 24 * time.Minute // ← 送りたい間隔を変更可
-	payload  = "いくぅ(笑)"              // POST する本文
 )
+
+var targetDate = time.Date(2025, 11, 16, 0, 0, 0, 0, time.UTC)
+
+func getDaysUntilTarget() int {
+	now := time.Now().UTC()
+	// 日付のみで比較するため、時刻を0時に設定
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	diff := targetDate.Sub(today)
+	days := int(diff.Hours() / 24)
+	return days
+}
 
 func postWebhook(ctx context.Context) error {
 	webhookURL := os.Getenv("WEBHOOK_URL")
+	
+	days := getDaysUntilTarget()
+	var payload string
+	if days > 0 {
+		payload = fmt.Sprintf("試験日まであと%d日", days)
+	} else if days == 1 {
+		payload = "覚悟"
+	} else {
+		payload = fmt.Sprintf("2025年11月16日から%d日経過しました", -days)
+	}
+	
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookURL, bytes.NewBufferString(payload))
 	if err != nil {
 		return err
